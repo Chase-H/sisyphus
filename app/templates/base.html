@@ -1,5 +1,6 @@
 {% set left_nav = [
     ('index', 'Home'),
+    ('play_game', 'Dispair'),
     ]
 %}
 {% set active_page = active_page|default('index') %}
@@ -38,12 +39,6 @@
                     {% endif %}
                     {% endfor %}
                 </div>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <div class="navbar-nav ml-auto">
-                    <a class="nav-item nav-link" href="{{ url_for('index') }}">Index</a>
-                </div>
-            </div>
         </nav>
     </header>
     {% with messages = get_flashed_messages() %}
