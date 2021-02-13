@@ -9,3 +9,8 @@ from app import app
 @app.route('/', methods=['GET'])
 def index():
     return render_template('base.html')
+
+
+@app.route('/game', methods=['GET'])
+def play_game():
+    return render_template('game.html')
