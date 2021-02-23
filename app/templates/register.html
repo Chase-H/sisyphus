@@ -3,8 +3,8 @@
 {% block content %}
 <main>
     <div class="container utility-form-container">
-        <h1>Sign In</h1>
-        <form action="" method="post" novalidate  class="utility-form">
+        <h1>Register</h1>
+        <form action="" method="post" class="utility-form">
             {{ form.hidden_tag() }}
             <p>
                 {{ form.username.label }}<br>
@@ -20,9 +20,15 @@
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
             </p>
+            <p>
+                {{ form.password2.label }}<br>
+                {{ form.password2(size=32) }}<br>
+                {% for error in form.password2.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
             <p>{{ form.submit(class_="btn btn-primary") }}</p>
         </form>
-        <a href="{{ url_for('register') }}">Register</a><br>
     </div>
 </main>
 
