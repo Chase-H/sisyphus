@@ -1,16 +1,20 @@
 {% set left_nav = [
+    ('index', 'Home'),
+    ('play_game', 'Dispair'),
     ]
 %}
 {% set active_page = active_page|default('index') %}
 
 <!doctype html>
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='base.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Cinzel+Decorative">
     <script src="https://kit.fontawesome.com/6aa7cc88a2.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        window.SCRIPT_ROOT = "{{ url_for('index', _external=True) }}";
+    </script>
     <meta charset="utf-8">
     <title>The Myth of Sisyphus</title>
     {% block head %}{% endblock %}
@@ -19,25 +23,22 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="{{ url_for('index') }}">The Myth of Sisyphus</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="navbar-nav">
                     {% for page, title in left_nav %}
+                    {% if page == active_page %}
                     <a class="nav-item nav-link active" href="{{ url_for(page) }}">{{title}}</a>
+                    {% else %}
+                    <a class="nav-item nav-link" href="{{ url_for(page) }}">{{title}}</a>
+                    {% endif %}
                     {% endfor %}
                 </div>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <div class="navbar-nav ml-auto">
-                    {% if current_user.is_anonymous %}
-                    <a class="nav-item nav-link" href="{{ url_for('login') }}">Log In</a>
-                    {% else %}
-                    <a class="nav-link" href="{{ url_for('play_game') }}">Suffer</a>
-                    <a class="nav-link" href="{{ url_for('logout') }}">Give Up</a>
-                    <a class="nav-link disabled" href="{{ url_for('index') }}">Logged in as: {{ current_user.username }}</a>
-                    {% endif %}
-                </div>
-            </div>
         </nav>
     </header>
     {% with messages = get_flashed_messages() %}
