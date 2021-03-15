@@ -186,11 +186,11 @@ Good luck.<br>
 
   //animate sprites
   const boulderScale = 5;
-  const initialBoulderWidth = 16;
-  const initialBoulderHeight = 18;
+  const initialBoulderWidth = 32;
+  const initialBoulderHeight = 32;
   const finalBoulderWidth = boulderScale * initialBoulderWidth;
   const finalBoulderHeight = boulderScale * initialBoulderHeight;
-  const boulderSpriteList = [0,1,0,2];
+  const boulderSpriteList = [0,1,2,3];
   let frameCount = 0;
   let spriteIndex = 0;
 
@@ -210,7 +210,7 @@ Good luck.<br>
   };
 
   let img = new Image();
-  img.src = 'https://opengameart.org/sites/default/files/Green-Cap-Character-16x18.png';
+  img.src = "{{ url_for('static', filename='rock_round.jpg')}}";
   //when img finished loading, run animation
   //img.onload = function() {
   //  animate();
