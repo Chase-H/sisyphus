@@ -1,22 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- <script src="{{ url_for('static', filename='js/main_scripts.js') }}"></script> -->
-<button id="rules" onclick="showRules(this)">Show Rules
+<script src="{{ url_for('static', filename='js/main_scripts.js') }}"></script>
+<button id="rules" onclick="showRules(this)">Hide Rules
 </button>
-<div id="rules_text" style="display:none">
-<p>
-How to Lose: <br>
-Try to move backwards. You can't.<br>
-Try to move downwards. You cant.<br>
-You can only go up and to the right, <br>
-to the top of the mountain, <br>
-to freedom. <br>
-Good luck.<br>
-</p>
-</div >
+<div style="display:flex" id="rules_parent">
+  <div id="rules_text" style="display:block">
+  <p>
+  How to Lose: <br>
+  Use the arrow keys. <br>
+  Try to move backwards. You can't.<br>
+  Try to move downwards. You cant.<br>
+  Like Sisyphus, you only have one path: <br>
+  up and to the right, <br>
+  to the top of the mountain, <br>
+  to freedom. <br>
+  Victory is an illusion. <br>
+  Good luck.<br>
+  </p>
+  </div >
 
-<canvas id="gameCanvas" width="300" height="300" style="border:1px solid">
-</canvas>
+  <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid">
+  </canvas>
+</div>
 
 <script>
   // to do
@@ -107,12 +112,6 @@ Good luck.<br>
 
   }
 
-  // function showBoulder() {
-  //   board_ctx.clearRect(0, 0, maxWidth, maxHeight);
-  //   board_ctx.fillStyle = "blue";
-  //   board_ctx.strokestyle = 'gray';
-  // }
-
   function moveSisyphusAndBoulder(direction, amount) {
     // 1 = up, 2 = down, 3 = left, 4= right
 
@@ -135,7 +134,7 @@ Good luck.<br>
           Sisyphus["y"] -= amount;
           Boulder["y"] -= amount;
           showSisyphus();
-          animate();
+       //   animate();
         };
         break;
       case 2:
@@ -146,7 +145,7 @@ Good luck.<br>
           Sisyphus["y"] += amount;
           Boulder["y"] += amount;
           showSisyphus();
-          animate();
+        //  animate();
         };
         break;
       case 3:
@@ -157,7 +156,7 @@ Good luck.<br>
           Sisyphus["x"] -= amount;
           Boulder["x"] -= amount;
           showSisyphus();
-          animate();
+         // animate();
         };
         break;
       case 4:
@@ -168,12 +167,12 @@ Good luck.<br>
           Sisyphus["x"] += amount;
           Boulder["x"] += amount;
           showSisyphus();
-          animate();
+          //animate();
         }
         break;
     }
-    console.log("Sisyphus location", Sisyphus["x"], Sisyphus["y"]);
-    console.log("Boulder location", Boulder["x"], Boulder["y"]);
+   //console.log("Sisyphus location", Sisyphus["x"], Sisyphus["y"]);
+   // console.log("Boulder location", Boulder["x"], Boulder["y"]);
 
   }
 
@@ -183,7 +182,7 @@ Good luck.<br>
       await sleep(1000);
     }
   }
-
+/* 
   //animate sprites
   const boulderScale = 5;
   const initialBoulderWidth = 32;
@@ -254,7 +253,7 @@ Good luck.<br>
     
     window.requestAnimationFrame(step);
 
-  }
+  } */
   
 
   //run game
