@@ -1,206 +1,276 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- <script src="{{ url_for('static', filename='js/main_scripts.js') }}"></script> -->
-<button id="rules" onclick="showRules(this)">Show Rules
+<script src="{{ url_for('static', filename='js/main_scripts.js') }}"></script>
+<button id="rules" onclick="showRules(this)">Hide Rules
 </button>
-<div id="rules_text" style="display:none">
-<p>
-How to Lose: <br>
-Try to move backwards. You can't.<br>
-Try to move downwards. You cant.<br>
-You can only go up and to the right, <br>
-to the top of the mountain, <br>
-to freedom. <br>
-Good luck.<br>
-</p>
-</div >
+<div style="display:flex" id="rules_parent">
+  <div id="rules_text" style="display:block">
+  <p>
+  How to Lose: <br>
+  Use the arrow keys. <br>
+  Try to move backwards. You can't.<br>
+  Try to move downwards. You cant.<br>
+  Like Sisyphus, you only have one path: <br>
+  up and to the right, <br>
+  to the top of the mountain, <br>
+  to freedom. <br>
+  Victory is an illusion. <br>
+  Good luck.<br>
+  </p>
+  </div >
 
-<canvas id="gameCanvas" width="300" height="300" style="border:1px solid">
-</canvas>
+  <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid">
+  </canvas>
+</div>
 
 <script>
-    // to do
-    // make boulder move automatically w sisyphus
-    //keystrokes
-    //better graphics
-    // add in error handling for movement outside of screen
-    // https://www.sitepoint.com/delay-sleep-pause-wait/
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
+  // to do
+  //better graphics
+  // add in error handling for movement outside of screen
+  // https://www.sitepoint.com/delay-sleep-pause-wait/
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
-    const board = document.getElementById("gameCanvas");
-    const board_ctx = board.getContext("2d");
-    const maxHeight = document.body.scrollHeight;
-    const maxWidth = document.body.scrollWidth;
+  const board = document.getElementById("gameCanvas");
+  const board_ctx = board.getContext("2d");
+  const maxHeight = document.body.scrollHeight;
+  const maxWidth = document.body.scrollWidth;
 
-    const direction = Object.freeze({
-      "UP": 1,
-      "DOWN": 2,
-      "LEFT": 3,
-      "RIGHT": 4
-    });
+  const direction = Object.freeze({
+    "UP": 1,
+    "DOWN": 2,
+    "LEFT": 3,
+    "RIGHT": 4
+  });
 
-    var Sisyphus = {
-      "x": 0,
-      "y": 270
-    };
+  var Sisyphus = {
+    "x": 0,
+    "y": 270
+  };
 
-    var Boulder = {
-      "x" : Sisyphus["x"]+30,
-      "y" : Sisyphus["y"] - 90
-    };
+  var Boulder = {
+    "x" : Sisyphus["x"]+30,
+    "y" : Sisyphus["y"] - 90
+  };
 
-    var lastKeyPressed = "";
-    var distanceWalked = 0;
-    var mountainsClimbed = 0;
+  var lastKeyPressed = "";
+  var distanceWalked = 0;
+  var mountainsClimbed = 0;
 
-    function showRules(element) {
-    var ruleText = document.getElementById(element.id + "_text");
-        if (ruleText.style.display == "none") {
-            ruleText.style.display = "block";
-            element.innerHTML = "Hide Rules";
-            }
-        else if (ruleText.style.display == "block") {
-            ruleText.style.display = "none";
-            element.innerHTML = "Show Rules";
-            }
-    }
-
-    document.addEventListener('keydown', function(event) {
-      //LEFT KEY
-      if(event.keyCode == 37) {
-        window.alert("Your Only Option Are Up and Forward. In That Order.");
-      }
-      //RIGHT KEY
-      else if(event.keyCode == 39 && lastKeyPressed == 38)  {
-        console.log('Right was pressed');
-        moveSisyphusAndBoulder(direction.RIGHT, 10);
-        lastKeyPressed = 39;
-        distanceWalked += 10;
-        board_ctx.fillText("Distance Traveled: " + distanceWalked + "m",10,50);
-        board_ctx.fillText("Mountains Climbed: " + mountainsClimbed,10,75);
-      }
-      //DOWN KEY
-      else if(event.keyCode == 40) {
-        window.alert("Your Only Option Are Up and Forward. In That Order.");
-      }
-      //UP KEY
-      else if(event.keyCode == 38 && (lastKeyPressed == "" || lastKeyPressed == 39)) {
-        moveSisyphusAndBoulder(direction.UP, 10);
-        lastKeyPressed = 38;
-        distanceWalked += 10;
-        board_ctx.fillText("Distance Traveled: " + distanceWalked + "m",10,50);
-        board_ctx.fillText("Mountains Climbed: " + mountainsClimbed,10,75);
-      } else {
-      }
-    });
-
-
-
-    function showSisyphus() {
-      board_ctx.clearRect(0, 0, maxWidth, maxHeight);
-      board_ctx.fillStyle = "gray";
-      board_ctx.strokestyle = 'black';
-      board_ctx.fillRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
-      board_ctx.strokeRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
-      board_ctx.fillRect(Boulder["x"], Boulder["y"], 80, 120);
-      board_ctx.strokeRect(Boulder["x"], Boulder["y"], 80, 120);
-
-    }
-
-    // function showBoulder() {
-    //   board_ctx.clearRect(0, 0, maxWidth, maxHeight);
-    //   board_ctx.fillStyle = "blue";
-    //   board_ctx.strokestyle = 'gray';
-    // }
-
-    function moveSisyphusAndBoulder(direction, amount) {
-      // 1 = up, 2 = down, 3 = left, 4= right
-
-      if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0) {
-      	Sisyphus["x"] = 0
-        Sisyphus["y"] = 270
-        Boulder["x"] = 30
-        Boulder["y"] = 180
-        showSisyphus();
-        mountainsClimbed++;
-        return;
-      }
-
-      switch (direction) {
-        case 1:
-          if ((Sisyphus["y"] + amount) < 0 ) {
-            console.log("Sisyphus is too close to the top of the screen.");
-          } else {
-
-            Sisyphus["y"] -= amount;
-            Boulder["y"] -= amount;
-            // Sisyphus = {
-            //  x: Sisyphus["x"],
-            //   y: Sisyphus["y"] - amount
-            // };
-            showSisyphus();
-          };
-          break;
-        case 2:
-
-          if ((Sisyphus["y"] + amount) > maxHeight) {
-            console.log("Sisyphus is too close to the bottom of the screen.");
-          } else {
-            Sisyphus["y"] += amount;
-            Boulder["y"] += amount;
-            showSisyphus();
-          };
-          break;
-        case 3:
-
-          if ((Sisyphus["x"] - amount) < 0) {
-            console.log("Sisyphus is too close to the left of the screen.");
-          } else {
-            Sisyphus["x"] -= amount;
-            Boulder["x"] -= amount;
-            showSisyphus();
-          };
-          break;
-        case 4:
-
-          if ((Sisyphus["x"] + amount) < 0) {
-            console.log("Sisyphus is too close to the right of the screen.");
-          } else {
-            Sisyphus["x"] += amount;
-            Boulder["x"] += amount;
-            showSisyphus();
+  function showRules(element) {
+  var ruleText = document.getElementById(element.id + "_text");
+      if (ruleText.style.display == "none") {
+          ruleText.style.display = "block";
+          element.innerHTML = "Hide Rules";
           }
-          break;
-      }
-      console.log("Sisyphus location", Sisyphus["x"], Sisyphus["y"]);
-      console.log("Boulder location", Boulder["x"], Boulder["y"]);
+      else if (ruleText.style.display == "block") {
+          ruleText.style.display = "none";
+          element.innerHTML = "Show Rules";
+          }
+  }
 
+  document.addEventListener('keydown', function(event) {
+    //LEFT KEY
+    if(event.keyCode == 37) {
+      window.alert("Your Only Option Are Up and Forward. In That Order.");
+    }
+    //RIGHT KEY
+    else if(event.keyCode == 39 && lastKeyPressed == 38)  {
+      console.log('Right was pressed');
+      moveSisyphusAndBoulder(direction.RIGHT, 10);
+      lastKeyPressed = 39;
+      distanceWalked += 10;
+      board_ctx.fillText("Distance Traveled: " + distanceWalked + "m",10,50);
+      board_ctx.fillText("Mountains Climbed: " + mountainsClimbed,10,75);
+    }
+    //DOWN KEY
+    else if(event.keyCode == 40) {
+      window.alert("Your Only Option Are Up and Forward. In That Order.");
+    }
+    //UP KEY
+    else if(event.keyCode == 38 && (lastKeyPressed == "" || lastKeyPressed == 39)) {
+      moveSisyphusAndBoulder(direction.UP, 10);
+      lastKeyPressed = 38;
+      distanceWalked += 10;
+      board_ctx.fillText("Distance Traveled: " + distanceWalked + "m",10,50);
+      board_ctx.fillText("Mountains Climbed: " + mountainsClimbed,10,75);
+    } else {
+    }
+  });
+
+
+
+  function showSisyphus() {
+    board_ctx.clearRect(0, 0, maxWidth, maxHeight);
+    board_ctx.fillStyle = "gray";
+    board_ctx.strokestyle = 'black';
+    board_ctx.fillRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
+    board_ctx.strokeRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
+    board_ctx.fillRect(Boulder["x"], Boulder["y"], 80, 120);
+    board_ctx.strokeRect(Boulder["x"], Boulder["y"], 80, 120);
+
+  }
+
+  function moveSisyphusAndBoulder(direction, amount) {
+    // 1 = up, 2 = down, 3 = left, 4= right
+
+    if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0) {
+      Sisyphus["x"] = 0
+      Sisyphus["y"] = 270
+      Boulder["x"] = 30
+      Boulder["y"] = 180
+      showSisyphus();
+      mountainsClimbed++;
+      return;
     }
 
-    async function loopOverTestInput(input) {
-      for(var i = 0; i < input.length; i ++) {
-        // moveSisyphusAndBoulder(input[i]["direction"], input[i]["amount"]);
-        //why doesnt this work
-        moveSisyphusAndBoulder(input[i]["direction"], input[i]["amount"]);
-        await sleep(1000);
-      }
+    switch (direction) {
+      case 1:
+        if ((Sisyphus["y"] + amount) < 0 ) {
+          console.log("Sisyphus is too close to the top of the screen.");
+        } else {
+
+          Sisyphus["y"] -= amount;
+          Boulder["y"] -= amount;
+          showSisyphus();
+       //   animate();
+        };
+        break;
+      case 2:
+
+        if ((Sisyphus["y"] + amount) > maxHeight) {
+          console.log("Sisyphus is too close to the bottom of the screen.");
+        } else {
+          Sisyphus["y"] += amount;
+          Boulder["y"] += amount;
+          showSisyphus();
+        //  animate();
+        };
+        break;
+      case 3:
+
+        if ((Sisyphus["x"] - amount) < 0) {
+          console.log("Sisyphus is too close to the left of the screen.");
+        } else {
+          Sisyphus["x"] -= amount;
+          Boulder["x"] -= amount;
+          showSisyphus();
+         // animate();
+        };
+        break;
+      case 4:
+
+        if ((Sisyphus["x"] + amount) < 0) {
+          console.log("Sisyphus is too close to the right of the screen.");
+        } else {
+          Sisyphus["x"] += amount;
+          Boulder["x"] += amount;
+          showSisyphus();
+          //animate();
+        }
+        break;
+    }
+   //console.log("Sisyphus location", Sisyphus["x"], Sisyphus["y"]);
+   // console.log("Boulder location", Boulder["x"], Boulder["y"]);
+
+  }
+
+  async function loopOverTestInput(input) {
+    for(var i = 0; i < input.length; i ++) {
+      moveSisyphusAndBoulder(input[i]["direction"], input[i]["amount"]);
+      await sleep(1000);
+    }
+  }
+/* 
+  //animate sprites
+  const boulderScale = 5;
+  const initialBoulderWidth = 32;
+  const initialBoulderHeight = 32;
+  const finalBoulderWidth = boulderScale * initialBoulderWidth;
+  const finalBoulderHeight = boulderScale * initialBoulderHeight;
+  const boulderSpriteList = [0,1,2,3];
+  let frameCount = 0;
+  let spriteIndex = 0;
+
+  //https://archive.jlongster.com/Making-Sprite-based-Games-with-Canvas
+      console.log("test");
+
+  var lastTime;
+  function main() {
+    var now = Date.now();
+    var dt = (now - lastTime) / 1000.0;
+
+    update(dt);
+    render();
+
+    lastTime = now;
+    requestAnimFrame(main);
+  };
+
+  let img = new Image();
+  img.src = "{{ url_for('static', filename='rock_round.jpg')}}";
+  //when img finished loading, run animation
+  //img.onload = function() {
+  //  animate();
+ // }
+
+
+
+  function drawFrame(frameX, frameY, canvasX, canvasY) {
+    //drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX...etc)
+    board_ctx.drawImage(img,
+    frameX * initialBoulderWidth,
+    frameY * initialBoulderHeight,
+    initialBoulderWidth,
+    initialBoulderHeight,
+    canvasX,
+    canvasY,
+    finalBoulderWidth,
+    finalBoulderHeight);
     }
 
-    let input = [{"direction":direction.UP, "amount":10},
-                 {"direction":direction.UP, "amount":10},
-                 {"direction":direction.RIGHT, "amount":10},
-                 {"direction":direction.DOWN, "amount":10},
-                 {"direction":direction.RIGHT, "amount":10},
-                 {"direction":direction.UP, "amount":10},
-                 {"direction":direction.UP, "amount":10}];
+  function animate() {
+   window.requestAnimationFrame(step);
+    }
+    
+  function step() {
+    frameCount++;
+    if (frameCount < 15) {
+      window.requestAnimationFrame(step);
+      return;
+    }
+    frameCount = 0;
+    board_ctx.clearRect(0,0,board.width,board.height);
+    //drawFrame(boulderSpriteList[spriteIndex],0,Boulder["x"], Boulder["y"]);
+    //spriteIndex++;
+    //if (spriteIndex => boulderSpriteList.length) {
+   // 	spriteIndex = 0;
+   // } 
+  //  for (var i = 0; i < boulderSpriteList.length; i++) {
+  //    drawFrame(boulderSpriteList[i],0,Boulder["x"], Boulder["y"]);
+  //  }
+    
+    window.requestAnimationFrame(step);
 
-    showSisyphus();
-    //loopOverTestInput(input);
+  } */
+  
+
+  //run game
+
+  let input = [{"direction":direction.UP, "amount":10},
+               {"direction":direction.UP, "amount":10},
+               {"direction":direction.RIGHT, "amount":10},
+               {"direction":direction.DOWN, "amount":10},
+               {"direction":direction.RIGHT, "amount":10},
+               {"direction":direction.UP, "amount":10},
+               {"direction":direction.UP, "amount":10}];
+
+  showSisyphus();
+  //loopOverTestInput(input);
 
 
 
 
-  </script>
+</script>
 {% endblock %}

@@ -1,0 +1,15 @@
+
+/* will have to rewrite some code to use, dont feel like messing with css styling/display rn
+ canvas {
+    height: 50vh;
+    width: 50vw;
+} */
+
+canvas {
+    height: 300px;
+    width: 300px;
+}
+
+#rules_parent {
+    width: 100px;
+}
