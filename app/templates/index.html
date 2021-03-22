@@ -1,4 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<h1>The Myth of Sisyphus</h1>
+<p>This is a game based on the Greek myth of <a href="https://en.wikipedia.org/wiki/Sisyphus">Sisyphus</a> with inspiration from Albert Camus' essay on absurdism,
+    <a href="https://www2.hawaii.edu/~freeman/courses/phil360/16.%20Myth%20of%20Sisyphus.pdf">The Myth of Sisyphus</a>. <br> The purpose of the game is to play. You can keep track of your progress, but no matter what you do,
+    the boulder will always roll downhill.
+</p>
 <img src="{{ url_for('static', filename='sisyphus-shadow.jpg')}}" alt="Oops, there was supposed to be something here" class="center" />
 {% endblock %}
