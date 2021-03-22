@@ -17,3 +17,8 @@ canvas {
   margin-right: auto;
   width: 50%;
 }
+
+a:hover {
+  background-color: white;
+  text-decoration-color: black;
+}

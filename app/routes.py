@@ -16,6 +16,10 @@ def index():
 def play_game():
     return render_template('game.html')
 
+@app.route('/restart', methods=['GET'])
+def restart():
+    return render_template('game.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
