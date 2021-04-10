@@ -19,13 +19,15 @@
   </p>
   </div >
 
-  <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid">
-  </canvas>
+  <div>
+    <textarea id="progress"></textarea>
+    <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid"></canvas>
+  </div>
 </div>
 
 <script>
   // to do
-  //better graphics
+  //better graphics/sprites
   // add in error handling for movement outside of screen
   // https://www.sitepoint.com/delay-sleep-pause-wait/
   function sleep(ms) {
@@ -34,6 +36,7 @@
 
   const board = document.getElementById("gameCanvas");
   const board_ctx = board.getContext("2d");
+  const progress = document.getElementById("progress");
   const maxHeight = document.body.scrollHeight;
   const maxWidth = document.body.scrollWidth;
 
@@ -57,6 +60,7 @@
   var lastKeyPressed = "";
   var distanceWalked = 0;
   var mountainsClimbed = 0;
+  var anotherKeyPressed = false;
 
   function showRules(element) {
   var ruleText = document.getElementById(element.id + "_text");
@@ -71,18 +75,17 @@
   }
 
   document.addEventListener('keydown', function(event) {
+    anotherKeyPressed = true;
     //LEFT KEY
     if(event.keyCode == 37) {
       window.alert("Your Only Option Are Up and Forward. In That Order.");
     }
     //RIGHT KEY
     else if(event.keyCode == 39 && lastKeyPressed == 38)  {
-      console.log('Right was pressed');
       moveSisyphusAndBoulder(direction.RIGHT, 10);
       lastKeyPressed = 39;
       distanceWalked += 10;
-      board_ctx.fillText("Distance Traveled: " + distanceWalked + "m",10,50);
-      board_ctx.fillText("Mountains Climbed: " + mountainsClimbed,10,75);
+      progress.value = "Distance Traveled: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
     }
     //DOWN KEY
     else if(event.keyCode == 40) {
@@ -90,11 +93,11 @@
     }
     //UP KEY
     else if(event.keyCode == 38 && (lastKeyPressed == "" || lastKeyPressed == 39)) {
+      upPressed = true;
       moveSisyphusAndBoulder(direction.UP, 10);
       lastKeyPressed = 38;
       distanceWalked += 10;
-      board_ctx.fillText("Distance Traveled: " + distanceWalked + "m",10,50);
-      board_ctx.fillText("Mountains Climbed: " + mountainsClimbed,10,75);
+      progress.value = "Distance Traveled: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
     } else {
     }
   });
@@ -171,10 +174,40 @@
         }
         break;
     }
-   //console.log("Sisyphus location", Sisyphus["x"], Sisyphus["y"]);
-   // console.log("Boulder location", Boulder["x"], Boulder["y"]);
 
   }
+
+
+const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+//once a key has been pressed, recursively waits 1 second, checks if new key has been pressed and if not 
+//moves user down and left one movement
+//to do:
+//stop sisyphus if at edge of screen
+//decrement mountains
+async function checkMovement(keyPress) {
+  anotherKeyPressed = false;
+  await timeout(1000);
+  //value before any keypress
+  if (keyPress != "") {
+    if (keyPress == lastKeyPressed && !anotherKeyPressed) {
+      //console.log(keyPress, lastKeyPressed, " no key pressed");
+      moveSisyphusAndBoulder(direction.DOWN, 10);
+      moveSisyphusAndBoulder(direction.LEFT, 10);
+      distanceWalked -= 20;
+      progress.value = "Distance Traveled: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
+      return await checkMovement(lastKeyPressed);
+    } 
+    else {
+      //console.log(lastKeyPressed, " key pressed within 1 second");
+    } 
+}
+  return await checkMovement(lastKeyPressed);
+}
+
+checkMovement(lastKeyPressed);
+
+
 
   async function loopOverTestInput(input) {
     for(var i = 0; i < input.length; i ++) {
