@@ -22,3 +22,17 @@ a:hover {
   background-color: white;
   text-decoration-color: black;
 }
+
+.video {
+    postion: relative;
+}
+
+#vid-left {
+    height: 650px;
+    width: 500px;
+}
+
+#vid-right {
+    height: 650px;
+    width: 500px;
+}
