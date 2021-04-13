@@ -39,6 +39,7 @@
   const progress = document.getElementById("progress");
   const maxHeight = document.body.scrollHeight;
   const maxWidth = document.body.scrollWidth;
+  board_ctx.font = "30px Arial";
 
   const direction = Object.freeze({
     "UP": 1,
@@ -78,7 +79,7 @@
     anotherKeyPressed = true;
     //LEFT KEY
     if(event.keyCode == 37) {
-      window.alert("Your Only Option Are Up and Forward. In That Order.");
+      showUserPressedWrongKeyMessage()
     }
     //RIGHT KEY
     else if(event.keyCode == 39 && lastKeyPressed == 38)  {
@@ -89,7 +90,7 @@
     }
     //DOWN KEY
     else if(event.keyCode == 40) {
-      window.alert("Your Only Option Are Up and Forward. In That Order.");
+      showUserPressedWrongKeyMessage()
     }
     //UP KEY
     else if(event.keyCode == 38 && (lastKeyPressed == "" || lastKeyPressed == 39)) {
@@ -102,7 +103,10 @@
     }
   });
 
-
+  function showUserPressedWrongKeyMessage() {
+    board_ctx.fillStyle = "red";
+    board_ctx.fillText("☝ or 👉", 180, 275);
+  }
 
   function showSisyphus() {
     board_ctx.clearRect(0, 0, maxWidth, maxHeight);
