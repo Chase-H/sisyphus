@@ -32,10 +32,7 @@
                     {% if current_user.is_anonymous %}
                     <a class="nav-item nav-link" href="{{ url_for('login') }}">Log In</a>
                     <a class="nav-link" href="{{ url_for('register') }}">Register</a>
-                    <a class="nav-link" href="{{ url_for('play_game') }}">Suffer</a>
                     {% else %}
-                    <a class="nav-link" href="{{ url_for('play_game') }}" title="Play Game">Suffer</a>
-                    <a class="nav-link" href="{{ url_for('restart') }}" title="Restart">Admit Defeat...This Time</a>
                     <a class="nav-link" href="{{ url_for('logout') }}" title="Log Out">End Your Torment</a>
                     <a class="nav-link disabled" href="{{ url_for('index') }}">Logged in as: {{ current_user.username }}</a>
                     {% endif %}

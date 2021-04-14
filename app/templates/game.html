@@ -3,21 +3,20 @@
 <script src="{{ url_for('static', filename='js/main_scripts.js') }}"></script>
 <button id="rules" onclick="showRules(this)">Hide Rules
 </button>
+<div id="rules_text" style="display:block">
+<p>
+Instrctions: <br>
+Like Sisyphus, you only have one path: <br>
+up and to the right, <br>
+to the top of the mountain, <br>
+to freedom. <br>
+Try to move backwards. You can't.<br>
+Try to move downwards. You cant.<br>
+Victory is an illusion. <br>
+Good luck.<br>
+</p>
+</div >
 <div style="display:flex" id="rules_parent">
-  <div id="rules_text" style="display:block">
-  <p>
-  Instrctions: <br>
-  Like Sisyphus, you only have one path: <br>
-  up and to the right, <br>
-  to the top of the mountain, <br>
-  to freedom. <br>
-  Try to move backwards. You can't.<br>
-  Try to move downwards. You cant.<br>
-  Victory is an illusion. <br>
-  Good luck.<br>
-  </p>
-  </div >
-
   <div>
     <textarea id="progress"></textarea>
     <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid"></canvas>

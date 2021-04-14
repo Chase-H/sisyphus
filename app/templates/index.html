@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="center">
-<h1>The Myth of Sisyphus</h1>
+<h1 style="text-align: center">The Myth of Sisyphus</h1>
 <p>This is a game based on the Greek myth of <a href="https://en.wikipedia.org/wiki/Sisyphus">Sisyphus</a> with inspiration from Albert Camus' essay on absurdism,
     <a href="https://www2.hawaii.edu/~freeman/courses/phil360/16.%20Myth%20of%20Sisyphus.pdf">The Myth of Sisyphus</a>. <br> The purpose of the game is to play. You can keep track of your progress, but no matter what you do,
     the boulder will always roll downhill.
@@ -9,32 +9,32 @@
     </div>
     <div class="video">
         <div id="vid-left" class="center">
-            <h2>The Original Myth</h2>
+            <h2 style="text-align: center">The Original Myth</h2>
             <iframe src="https://www.youtube.com/embed/q4pDUxth5fQ" frameborder="0" allowfullscreen width="500" height="400"></iframe>
         </div>
         <div id="vid-right" class="center">
-            <h2>Camus' The Myth of Sisyphus<br> Explained</h2>
-            <p style="color: red"><b>Content Warning: Mentions of Suicide in a Philosophical Context</b></p>
+            <h2 style="text-align: center">Camus' The Myth of Sisyphus<br> Explained</h2>
+            <p style="color: red; text-align: center"><b>(Content Warning: Mentions of Suicide in a Philosophical Context)</b></p>
             <iframe src="https://www.youtube.com/embed/IKk4WEs3SyQ" frameborder="0" allowfullscreen width="500" height="400"></iframe>
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/main_scripts.js') }}"></script>
-<button id="rules" onclick="showRules(this)">Hide Rules
-</button>
-<div style="display:flex" id="rules_parent">
-  <div id="rules_text" style="display:block">
+<div class="center">
+    <h2 style="text-align: center">The Game</h2>
+</div>
+<!--<button id="rules" onclick="showRules(this)" class="center">Hide Rules-->
+<!--</button>-->
+  <div id="rules_text" style="display:block" class="center" style="margin-bottom: 1em;">
   <p>
-  Instrctions: <br>
+      <b>Instructions:</b> <br>
   Like Sisyphus, you only have one path: <br>
-  up and to the right, <br>
-  to the top of the mountain, <br>
-  to freedom. <br>
-  Try to move backwards. You can't.<br>
-  Try to move downwards. You cant.<br>
-  Victory is an illusion. <br>
-  Good luck.<br>
+  Push the boulder up the hill, retrieve the boulder, repeat.<br>
+      <b>(Press 'W' to go up and 'D' to go right, then on the way back, press 'S' to go down and 'A' to go left)</b><br>
+  Feel free to think deeply how this game is any more or less meaningful than anything else while you play.<br>
+      Enjoy.
   </p>
   </div >
+<div style="display:flex" id="rules_parent" class="center">
 
   <div>
     <textarea id="progress"></textarea>
@@ -78,6 +78,7 @@
   var distanceWalked = 0;
   var mountainsClimbed = 0;
   var anotherKeyPressed = false;
+  var goingUP = true;
 
   function showRules(element) {
   var ruleText = document.getElementById(element.id + "_text");
@@ -92,95 +93,132 @@
   }
 
   document.addEventListener('keydown', function(event) {
-    anotherKeyPressed = true;
+    console.log("keypressed: ", event.keyCode, " last key ressed: ", lastKeyPressed,
+        " going up: ", goingUP );
     //LEFT KEY
-    if(event.keyCode == 37) {
-      window.alert("Your Only Option Are Up and Forward. In That Order.");
-    }
+    if(event.keyCode == 65) {
+        if (!goingUP && lastKeyPressed == 83) {
+            moveSisyphusAndBoulder(direction.LEFT, 10);
+            lastKeyPressed = 65;
+            distanceWalked += 10;
+            progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
+    } else
+      showUserPressedWrongKeyMessage();
+        }
     //RIGHT KEY
     else if(event.keyCode == 68 && lastKeyPressed == 87)  {
-      moveSisyphusAndBoulder(direction.RIGHT, 10);
-      lastKeyPressed = 68;
-      distanceWalked += 10;
-      progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
+        if (goingUP) {
+            moveSisyphusAndBoulder(direction.RIGHT, 10);
+            lastKeyPressed = 68;
+            distanceWalked += 10;
+            progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
+        } else {
+            showUserPressedWrongKeyMessage();
+        }
     }
     //DOWN KEY
-    else if(event.keyCode == 40) {
-      window.alert("Your Only Option Are Up and Forward. In That Order.");
+    else if(event.keyCode == 83) {
+        if (!goingUP && lastKeyPressed == 65 || (Sisyphus["x"] == 270 && Sisyphus["y"] == 0)) {
+            moveSisyphusAndBoulder(direction.DOWN, 10);
+            lastKeyPressed = 83;
+            distanceWalked += 10;
+            progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
+    } else
+      showUserPressedWrongKeyMessage();
     }
     //UP KEY
-    else if(event.keyCode == 87 && (lastKeyPressed == "" || lastKeyPressed == 68)) {
-      upPressed = true;
-      moveSisyphusAndBoulder(direction.UP, 10);
-      lastKeyPressed = 87;
-      distanceWalked += 10;
-      progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
+    else if(event.keyCode == 87 && (lastKeyPressed == "" || lastKeyPressed == 68 || (lastKeyPressed == 83 && goingUP))) {
+        if (goingUP) {
+            upPressed = true;
+            moveSisyphusAndBoulder(direction.UP, 10);
+            lastKeyPressed = 87;
+            distanceWalked += 10;
+            progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
+        } else {
+            showUserPressedWrongKeyMessage();
+        }
     } else {
     }
   });
 
+  function showUserPressedWrongKeyMessage() {
+    board_ctx.fillStyle = "red";
+    if (goingUP) {
+        board_ctx.fillText("☝ or 👉", 180, 275);
+        } else {
+        board_ctx.fillText("👇 or 👈", 180, 275);
+       }
 
+  }
 
   function showSisyphus() {
     board_ctx.clearRect(0, 0, maxWidth, maxHeight);
     board_ctx.fillStyle = "gray";
     board_ctx.strokestyle = 'black';
-    board_ctx.fillRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
-    board_ctx.strokeRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
     board_ctx.fillRect(Boulder["x"], Boulder["y"], 80, 120);
     board_ctx.strokeRect(Boulder["x"], Boulder["y"], 80, 120);
-
+    board_ctx.fillRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
+    board_ctx.strokeRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
   }
 
-  function moveSisyphusAndBoulder(direction, amount) {
+  function moveSisyphusAndBoulder(direction, amount, punishment=false) {
     // 1 = up, 2 = down, 3 = left, 4= right
-    if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0) {
-      Sisyphus["x"] = 0
-      Sisyphus["y"] = 270
+    if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0 && goingUP) {
+      {#Sisyphus["x"] = 0#}
+      {#Sisyphus["y"] = 270#}
       Boulder["x"] = 30
       Boulder["y"] = 180
       showSisyphus();
       mountainsClimbed++;
+      goingUP = false;
       return;
     }
 
+    else if (Sisyphus["x"] == 0 && Sisyphus["y"] == 270 && !goingUP) {
+      goingUP = true;
+      return;
+    }
+
+
     switch (direction) {
       case 1:
-        if ((Sisyphus["y"] + amount) < 0 ) {
+        if (Sisyphus["y"] == 0 ) {
           console.log("Sisyphus is too close to the top of the screen.");
         } else {
-
-          Sisyphus["y"] -= amount;
           Boulder["y"] -= amount;
+          Sisyphus["y"] -= amount;
           showSisyphus();
        //   animate();
         };
         break;
       case 2:
 
-        if ((Sisyphus["y"] + amount) > maxHeight) {
+        if (Sisyphus["x"] == 0) {
           console.log("Sisyphus is too close to the bottom of the screen.");
         } else {
+            if (punishment) {
+                Boulder["y"] += amount;
+            }
           Sisyphus["y"] += amount;
-          Boulder["y"] += amount;
           showSisyphus();
         //  animate();
         };
         break;
       case 3:
 
-        if ((Sisyphus["x"] - amount) < 0) {
+        if (Sisyphus["y"] == 270 && Sisyphus["x"] == 0) {
           console.log("Sisyphus is too close to the left of the screen.");
         } else {
+            if (punishment) {
+                Boulder["x"] -= amount;
+            }
           Sisyphus["x"] -= amount;
-          Boulder["x"] -= amount;
           showSisyphus();
          // animate();
         };
         break;
       case 4:
-
-        if ((Sisyphus["x"] + amount) < 0) {
+        if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0) {
           console.log("Sisyphus is too close to the right of the screen.");
         } else {
           Sisyphus["x"] += amount;
@@ -206,17 +244,17 @@ async function checkMovement(keyPress) {
   await timeout(1000);
   //value before any keypress
   if (keyPress != "") {
-    if (keyPress == lastKeyPressed && !anotherKeyPressed) {
+    if (keyPress == lastKeyPressed && !anotherKeyPressed && goingUP) {
         if ((Sisyphus["x"] == 270 && Sisyphus["y"] == 0) || (Sisyphus["x"] == 0 && Sisyphus["y"] == 270)) {
 
         } else {
             console.log(keyPress, lastKeyPressed, " no key pressed");
             console.log("Sisyphus is at ", Sisyphus["x"], " ", Sisyphus["y"], " before");
             if (lastKeyPressed == 68) {
-                moveSisyphusAndBoulder(direction.LEFT, 10);
+                moveSisyphusAndBoulder(direction.LEFT, 10, true);
                 lastKeyPressed = 87;
             } else if (lastKeyPressed == 87) {
-                moveSisyphusAndBoulder(direction.DOWN, 10);
+                moveSisyphusAndBoulder(direction.DOWN, 10, true);
                 lastKeyPressed = 68;
             }
             console.log("Sisyphus is at ", Sisyphus["x"], " ", Sisyphus["y"], " after");
@@ -333,4 +371,5 @@ checkMovement(lastKeyPressed);
 
 
 </script>
+
 {% endblock %}
