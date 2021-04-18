@@ -21,7 +21,8 @@
 
   <div>
     <textarea id="progress"></textarea>
-    <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid"></canvas>
+    <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid">
+    </canvas>
   </div>
 </div>
 
@@ -123,7 +124,7 @@
       Sisyphus["y"] = 270
       Boulder["x"] = 30
       Boulder["y"] = 180
-      showSisyphus();
+      //showSisyphus();
       mountainsClimbed++;
       return;
     }
@@ -136,8 +137,8 @@
 
           Sisyphus["y"] -= amount;
           Boulder["y"] -= amount;
-          showSisyphus();
-       //   animate();
+         // showSisyphus();
+         // animate();
         };
         break;
       case 2:
@@ -147,7 +148,7 @@
         } else {
           Sisyphus["y"] += amount;
           Boulder["y"] += amount;
-          showSisyphus();
+          //showSisyphus();
         //  animate();
         };
         break;
@@ -158,7 +159,7 @@
         } else {
           Sisyphus["x"] -= amount;
           Boulder["x"] -= amount;
-          showSisyphus();
+         // showSisyphus();
          // animate();
         };
         break;
@@ -169,8 +170,8 @@
         } else {
           Sisyphus["x"] += amount;
           Boulder["x"] += amount;
-          showSisyphus();
-          //animate();
+          //showSisyphus();
+         // animate();
         }
         break;
     }
@@ -215,82 +216,8 @@ checkMovement(lastKeyPressed);
       await sleep(1000);
     }
   }
-/* 
-  //animate sprites
-  const boulderScale = 5;
-  const initialBoulderWidth = 32;
-  const initialBoulderHeight = 32;
-  const finalBoulderWidth = boulderScale * initialBoulderWidth;
-  const finalBoulderHeight = boulderScale * initialBoulderHeight;
-  const boulderSpriteList = [0,1,2,3];
-  let frameCount = 0;
-  let spriteIndex = 0;
 
-  //https://archive.jlongster.com/Making-Sprite-based-Games-with-Canvas
-      console.log("test");
-
-  var lastTime;
-  function main() {
-    var now = Date.now();
-    var dt = (now - lastTime) / 1000.0;
-
-    update(dt);
-    render();
-
-    lastTime = now;
-    requestAnimFrame(main);
-  };
-
-  let img = new Image();
-  img.src = "{{ url_for('static', filename='rock_round.jpg')}}";
-  //when img finished loading, run animation
-  //img.onload = function() {
-  //  animate();
- // }
-
-
-
-  function drawFrame(frameX, frameY, canvasX, canvasY) {
-    //drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX...etc)
-    board_ctx.drawImage(img,
-    frameX * initialBoulderWidth,
-    frameY * initialBoulderHeight,
-    initialBoulderWidth,
-    initialBoulderHeight,
-    canvasX,
-    canvasY,
-    finalBoulderWidth,
-    finalBoulderHeight);
-    }
-
-  function animate() {
-   window.requestAnimationFrame(step);
-    }
-    
-  function step() {
-    frameCount++;
-    if (frameCount < 15) {
-      window.requestAnimationFrame(step);
-      return;
-    }
-    frameCount = 0;
-    board_ctx.clearRect(0,0,board.width,board.height);
-    //drawFrame(boulderSpriteList[spriteIndex],0,Boulder["x"], Boulder["y"]);
-    //spriteIndex++;
-    //if (spriteIndex => boulderSpriteList.length) {
-   // 	spriteIndex = 0;
-   // } 
-  //  for (var i = 0; i < boulderSpriteList.length; i++) {
-  //    drawFrame(boulderSpriteList[i],0,Boulder["x"], Boulder["y"]);
-  //  }
-    
-    window.requestAnimationFrame(step);
-
-  } */
-  
-
-  //run game
-
+  //test input
   let input = [{"direction":direction.UP, "amount":10},
                {"direction":direction.UP, "amount":10},
                {"direction":direction.RIGHT, "amount":10},
@@ -299,8 +226,233 @@ checkMovement(lastKeyPressed);
                {"direction":direction.UP, "amount":10},
                {"direction":direction.UP, "amount":10}];
 
-  showSisyphus();
-  //loopOverTestInput(input);
+
+               
+
+
+
+
+
+
+
+
+
+
+
+  //////////////////////////////////////////////////
+  /////////////////////////////////////////////////
+  //////////////////////////////////////////////////
+  //animate sprites
+
+  // A cross-browser requestAnimationFrame
+// See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
+var requestAnimFrame = (function(){
+    return window.requestAnimationFrame       ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame    ||
+        window.oRequestAnimationFrame      ||
+        window.msRequestAnimationFrame     ||
+        function(callback){
+            window.setTimeout(callback, 1000 / 60);
+        };
+})();
+
+
+
+  //const initialBoulderWidth = 50;
+  //const initialBoulderHeight = 50;
+  //boulder and player sprite counts
+  let boulderMoveSprites = [...Array(73).keys()];
+  let playerMoveSprites = [...Array(12).keys()]
+  //let frameCount = 0;
+  //let spriteIndex = 0;
+  playerLoaded = false;
+  boulderLoaded = false;
+
+  /////////////////////////////
+//////////////////////////////sprite code
+(function() {
+    function Sprite(image, pos, size, speed, frames, dir, once) {
+        this.pos = pos;
+        this.size = size;
+        this.speed = typeof speed === 'number' ? speed : 0;
+        this.frames = frames;
+        this._index = 0;
+        this.image = image;
+        this.dir = dir || 'horizontal';
+        this.once = once;
+    };
+
+    Sprite.prototype = {
+        update: function() {
+            this._index += 1;
+        },
+
+        render: function(board_ctx) {
+            var frame;
+            var max = this.frames.length;
+            //restart if get to end of sprite file
+            if (this._index == max) {
+                frame = this.frames[0];
+                this._index = 0;
+            }
+            frame = this.frames[this._index];
+
+            if(this.once) {
+                this.done = true;
+                return;
+            }
+
+
+            var x = this.pos[0];
+            var y = this.pos[1];
+
+            console.log(typeof this.image);
+            board_ctx.drawImage(this.image,
+                          x, y,
+                          this.size[0], this.size[1],
+                          0, 0,
+                          this.size[0], this.size[1]);
+        }
+    };
+
+    window.Sprite = Sprite;
+})();
+
+///////////////////////////////////
+  //loading images
+  //var boulderImage = document.createElement("boulderImage");
+  //drawImage args: image location, starting x and y coordinates from image, 
+  //ending x and y coordinates from image, starting x and y coordinates from canvas, ending x and y coordinates from canvas
+  /*
+  let boulderImage = new Image();
+  boulderImage.src = "{{ url_for('static', filename='boulderSprite.png')}}";
+  boulderImage.onload = function() {
+    console.log("boulder loaded");
+    boulderLoaded = true;
+    board_ctx.drawImage(boulderImage, 0, 0, 50, 50,50,50,100,100)
+
+  }; */
+
+  //let playerImage = document.createElement("playerImage");
+  let playerImage = new Image();
+  playerImage.src = "{{ url_for('static', filename='playerSprite2.png')}}";
+  playerImage.onload = function() {
+    console.log("player loaded");
+
+
+
+
+
+    var width = 337;
+    var height = 276;
+    var scale = .1;
+    var gameWidth = width * scale;
+    var gameHeight = height * scale;
+    playerLoaded = true;
+
+  function drawFrame(frameX, frameY, canvasX, canvasY) {
+    board_ctx.drawImage(playerImage,
+                frameX * width, frameY * height, width, height,
+                canvasX, canvasY, gameWidth, gameHeight);
+  }
+
+  drawFrame(0, 0, 0, 0);
+  drawFrame(1, 0, gameWidth, 0);
+  drawFrame(2, 0, gameWidth * 2, 0);
+  drawFrame(3, 0, gameWidth * 3, 0);
+
+/*
+    board_ctx.drawImage(playerImage, 0, 0, width,height,
+    0,0,gameWidth,height * scale);
+    board_ctx.drawImage(playerImage, width, 0, width,height,
+    gameWidth,0,gameWidth,gameHeight);
+    board_ctx.drawImage(playerImage, width * 2, 0, width,height,
+    gameWidth * 2,0,gameWidth,gameHeight);
+*/
+  };
+
+  let background = new Image();
+  background.src = "{{ url_for('static', filename='background.png')}}";
+  background.onload = function() {
+   // board_ctx.drawImage(background, 0, 0);
+
+  };
+/* 
+  //setting player and boulder location + sprite info
+  //https://archive.jlongster.com/Making-Sprite-based-Games-with-Canvas
+  var player = {
+    pos: [Sisyphus["x"], Sisyphus["y"]],
+    sprite: new Sprite(image = playerImage, pos = [0, 0], size = [50, 50], speed=16, frames = playerMoveSprites)
+};
+
+var boulder = {
+    pos: [Boulder["x"],Boulder["y"]],
+    sprite: new Sprite(image = boulderImage, pos = [0, 0], size = [50, 50], speed=16, frames = boulderMoveSprites)
+};
+
+
+
+/////////////////
+////rendering and updating sprites
+  function main() {
+    update()
+    render();
+    requestAnimFrame(main);
+};
+
+
+function init() {
+    main();
+}
+
+function update() {
+    updateEntities();
+};
+
+function updateEntities() {
+    // Update the player sprite animation on keypress
+    player.sprite.update();
+}
+    // Draw everything
+    function render() {
+      if (playerLoaded) {
+        console.log("rendering player");
+        renderEntity(player);
+      }
+      if (boulderLoaded) {
+        console.log("rendering boulder");
+        renderEntity(boulder);
+      }
+    };
+    
+    function renderEntities(list) {
+        for(var i=0; i<list.length; i++) {
+            renderEntity(list[i]);
+        }    
+    }
+    
+    function renderEntity(entity) {
+        board_ctx.save();
+        //console.log("rendering entity");
+        //board_ctx.drawImage(entity.image, entity.pos[0], entity.pos[1]);
+        board_ctx.translate(entity.pos[0], entity.pos[1]);
+        entity.sprite.render(board_ctx);
+        board_ctx.restore();
+    }
+
+
+  
+
+
+
+
+  main();
+
+
+
+ */
+
 
 
 
