@@ -20,16 +20,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a id="brand" class="navbar-brand" href="{{ url_for('index') }}">The Myth of Sisyphus</a>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <div class="navbar-nav">
-                    {% for page, title in left_nav %}
-                    <a class="nav-item nav-link active" href="{{ url_for(page) }}">{{title}}</a>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <div class="navbar-nav ml-auto">
+                <div class="navbar-nav mr-auto">
                     {% if current_user.is_anonymous %}
                     <a class="nav-item nav-link" href="{{ url_for('login') }}">Log In</a>
                     <a class="nav-link" href="{{ url_for('register') }}">Register</a>
@@ -38,7 +29,6 @@
                     <a class="nav-link disabled" href="{{ url_for('index') }}">Logged in as: {{ current_user.username }}</a>
                     {% endif %}
                 </div>
-            </div>
         </nav>
     </header>
     {% with messages = get_flashed_messages() %}
