@@ -3,6 +3,7 @@
 %}
 {% set active_page = active_page|default('index') %}
 
+
 <!doctype html>
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -18,7 +19,7 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{{ url_for('index') }}">The Myth of Sisyphus</a>
+            <a id="brand" class="navbar-brand" href="{{ url_for('index') }}">The Myth of Sisyphus</a>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <div class="navbar-nav">
@@ -64,3 +65,41 @@
     </script>
 </body>
 </html>
+
+<script type="text/javascript"> 
+
+    var brand = document.getElementById("brand");
+    var blue = "#007bff";
+    var greyish = (0,0,0,.9);
+
+    $(function () {
+        // get link anchors
+        var links = document.getElementsByClassName("nav-link")
+        let arry = [...links]
+        var onGamePage = true;
+        arry.forEach(function (item, index) {
+            if(item.href == location.href) {
+                makeElementColor(item, blue);
+                makeElementStyle(item, "bold");
+                makeElementColor(brand, greyish);
+                makeElementStyle(brand, "normal");
+                onGamePage = false;
+                return;
+            }
+        });
+        // if we're not on login or register, on game page
+        if (onGamePage) {
+            makeElementColor(brand, blue);
+            makeElementStyle(brand, "bold");
+        }
+    });
+
+    function makeElementStyle(element, style) {
+        element.style.fontWeight = style;
+    }
+
+    function makeElementColor(element, color) {
+        element.style.color = color;
+    }
+
+</script> 
