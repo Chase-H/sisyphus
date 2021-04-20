@@ -12,9 +12,9 @@ def index():
     return render_template('index.html')
 
 
-# @app.route('/play_game', methods=['GET'])
-# def play_game():
-#     return render_template('game.html')
+#@app.route('/play_game', methods=['GET'])
+#def play_game():
+#    return render_template('game.html')
 
 @app.route('/restart', methods=['GET'])
 def restart():
