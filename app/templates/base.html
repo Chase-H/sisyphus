@@ -3,6 +3,7 @@
 %}
 {% set active_page = active_page|default('index') %}
 
+
 <!doctype html>
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -18,17 +19,8 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{{ url_for('index') }}">The Myth of Sisyphus</a>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <div class="navbar-nav">
-                    {% for page, title in left_nav %}
-                    <a class="nav-item nav-link active" href="{{ url_for(page) }}">{{title}}</a>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <div class="navbar-nav ml-auto">
+            <a id="brand" class="navbar-brand" href="{{ url_for('index') }}">The Myth of Sisyphus</a>
+                <div class="navbar-nav mr-auto">
                     {% if current_user.is_anonymous %}
                     <a class="nav-item nav-link" href="{{ url_for('login') }}">Log In</a>
                     <a class="nav-link" href="{{ url_for('register') }}">Register</a>
@@ -37,7 +29,6 @@
                     <a class="nav-link disabled" href="{{ url_for('index') }}">Logged in as: {{ current_user.username }}</a>
                     {% endif %}
                 </div>
-            </div>
         </nav>
     </header>
     {% with messages = get_flashed_messages() %}
@@ -64,3 +55,41 @@
     </script>
 </body>
 </html>
+
+<script type="text/javascript"> 
+
+    var brand = document.getElementById("brand");
+    var blue = "#007bff";
+    var greyish = (0,0,0,.9);
+
+    $(function () {
+        // get link anchors
+        var links = document.getElementsByClassName("nav-link")
+        let arry = [...links]
+        var onGamePage = true;
+        arry.forEach(function (item, index) {
+            if(item.href == location.href) {
+                makeElementColor(item, blue);
+                makeElementStyle(item, "bold");
+                makeElementColor(brand, greyish);
+                makeElementStyle(brand, "normal");
+                onGamePage = false;
+                return;
+            }
+        });
+        // if we're not on login or register, on game page
+        if (onGamePage) {
+            makeElementColor(brand, blue);
+            makeElementStyle(brand, "bold");
+        }
+    });
+
+    function makeElementStyle(element, style) {
+        element.style.fontWeight = style;
+    }
+
+    function makeElementColor(element, color) {
+        element.style.color = color;
+    }
+
+</script> 
