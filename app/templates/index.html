@@ -43,9 +43,7 @@
 </div>
 
 <script>
-  // to do
-  //better graphics/sprites
-  // add in error handling for movement outside of screen
+  //please forgive the spaghetti and nested if/ else if/ for loops, im lazy
   // https://www.sitepoint.com/delay-sleep-pause-wait/
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -57,6 +55,20 @@
   const maxHeight = document.body.scrollHeight;
   const maxWidth = document.body.scrollWidth;
 
+
+  var initPlayerWidth = 252;
+  var initPlayerHeight = 212;
+  var initBoulderHeight = 200;
+  var initBoulderWidth = 200;
+  var canvasWidth = 300;
+  var canvasHeight = 300;
+  var playerScale = .25;
+  var boulderScale = .5;
+  var playerWidth = initPlayerWidth * playerScale;
+  var playerHeight = initPlayerHeight * playerScale;
+  var boulderWidth = initBoulderWidth * boulderScale;
+  var boulderHeight = initBoulderHeight * boulderScale;
+
   const direction = Object.freeze({
     "UP": 1,
     "DOWN": 2,
@@ -66,12 +78,11 @@
 
   var Sisyphus = {
     "x": 0,
-    "y": 270
+    "y": canvasHeight - playerHeight
   };
-
   var Boulder = {
-    "x" : Sisyphus["x"]+30,
-    "y" : Sisyphus["y"] - 90
+    "x" : Sisyphus["x"] + playerWidth,
+    "y" : canvasHeight - boulderHeight
   };
 
   var lastKeyPressed = "";
@@ -79,6 +90,88 @@
   var mountainsClimbed = 0;
   var anotherKeyPressed = false;
   var goingUP = true;
+
+  //////////////////////////////////////////////////
+  /////////////////////////////////////////////////
+  //////////////////////////////////////////////////
+  //animate sprites
+  //boulder and player sprite counts
+  let boulderMoveSprites = [0,1];
+  let playerMoveSprites = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+  //width and height of each sprite image
+  function drawFrame(image, frameX, frameY, canvasX, canvasY, width, height) {
+    board_ctx.drawImage(image,
+                frameX * width, frameY * height, width, height,
+                canvasX, canvasY, playerWidth, playerHeight);
+  }
+
+  // load first frame or else sprite will be blank until keypress
+  function initPlayer() {
+  drawFrame(playerImage, playerMoveSprites[0], 0, Sisyphus["x"], Sisyphus["y"], initPlayerWidth, initPlayerHeight);
+  }
+
+  function initBoulder() {
+    drawFrame(boulderImage, boulderMoveSprites[0], 0, Boulder["x"], Boulder["y"], initBoulderWidth, initBoulderHeight);
+  }
+
+  // 1 bc already called first frame
+  let currentPlayerLoopIndex = 1;
+  let currentBoulderLoopIndex = 1;
+
+  function step(direction) {
+    //clear board
+    board_ctx.clearRect(0, 0, board.width, board.height);
+    //draw player
+    drawFrame(playerImage, playerMoveSprites[currentPlayerLoopIndex], 0, Sisyphus["x"], Sisyphus["y"], initPlayerWidth, initPlayerHeight);
+    //step forwards or backwards
+    if (direction == "forwards") {
+      currentPlayerLoopIndex++;
+      if (currentPlayerLoopIndex >= playerMoveSprites.length) {
+        currentPlayerLoopIndex = 0;
+      }
+    } else if (direction == "backwards") {
+      currentPlayerLoopIndex--;
+      if (currentPlayerLoopIndex < 0) {
+        currentPlayerLoopIndex = playerMoveSprites.length;
+      }
+    } else {
+      console.log("step does not accept this direction");
+    }
+    //draw boulder
+    drawFrame(boulderImage, boulderMoveSprites[currentBoulderLoopIndex], 0, Boulder["x"], Boulder["y"], initBoulderWidth, initBoulderHeight);
+    //step forwards or backwards
+    if (direction == "forwards") {
+      currentBoulderLoopIndex++;
+      if (currentBoulderLoopIndex >= boulderMoveSprites.length) {
+        currentBoulderLoopIndex = 0;
+      }
+    } else if (direction == "backwards") {
+      currentBoulderLoopIndex--;
+      if (currentBoulderLoopIndex < 0) {
+        currentBoulderLoopIndex = boulderMoveSprites.length;
+      }
+    } else {
+      console.log("step does not accept this direction");
+    }
+  }
+
+
+  //////////////////////////////////
+  //loading images
+  //drawImage args: image location, starting x and y coordinates from image, 
+  //ending x and y coordinates from image, starting x and y coordinates from canvas, ending x and y coordinates from canvas
+  //draw frame just looks at frame locations in sprite sheet and canvas locations
+  let boulderImage = new Image();
+  boulderImage.src = "{{ url_for('static', filename='boulderSprite2.png')}}";
+  boulderImage.onload = function() {
+    initBoulder();
+  };
+
+  let playerImage = new Image();
+  playerImage.src = "{{ url_for('static', filename='playerSprite3.png')}}";
+  playerImage.onload = function() {
+    initPlayer();
+  };
 
   function showRules(element) {
   var ruleText = document.getElementById(element.id + "_text");
@@ -103,7 +196,7 @@
             distanceWalked += 10;
             progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
     } else
-      showUserPressedWrongKeyMessage();
+      window.alert("Your Only Option Are Up and Forward. In That Order.");
         }
     //RIGHT KEY
     else if(event.keyCode == 68 && lastKeyPressed == 87)  {
@@ -113,7 +206,7 @@
             distanceWalked += 10;
             progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
         } else {
-            showUserPressedWrongKeyMessage();
+            window.alert("Your Only Option Are Down and Backwards. In That Order.");
         }
     }
     //DOWN KEY
@@ -124,7 +217,7 @@
             distanceWalked += 10;
             progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
     } else
-      showUserPressedWrongKeyMessage();
+      window.alert("Your Only Option Are Up and Forward. In That Order.");
     }
     //UP KEY
     else if(event.keyCode == 87 && (lastKeyPressed == "" || lastKeyPressed == 68 || (lastKeyPressed == 83 && goingUP))) {
@@ -135,40 +228,20 @@
             distanceWalked += 10;
             progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
         } else {
-            showUserPressedWrongKeyMessage();
+            window.alert("Your Only Option Are Down and Backwards. In That Order.");
         }
     } else {
     }
   });
 
-  function showUserPressedWrongKeyMessage() {
-    board_ctx.fillStyle = "red";
-    if (goingUP) {
-        board_ctx.fillText("☝ or 👉", 180, 275);
-        } else {
-        board_ctx.fillText("👇 or 👈", 180, 275);
-       }
-
-  }
-
-  function showSisyphus() {
-    board_ctx.clearRect(0, 0, maxWidth, maxHeight);
-    board_ctx.fillStyle = "gray";
-    board_ctx.strokestyle = 'black';
-    board_ctx.fillRect(Boulder["x"], Boulder["y"], 80, 120);
-    board_ctx.strokeRect(Boulder["x"], Boulder["y"], 80, 120);
-    board_ctx.fillRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
-    board_ctx.strokeRect(Sisyphus["x"], Sisyphus["y"], 30, 30);
-  }
 
   function moveSisyphusAndBoulder(direction, amount, punishment=false) {
     // 1 = up, 2 = down, 3 = left, 4= right
     if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0 && goingUP) {
-      {#Sisyphus["x"] = 0#}
-      {#Sisyphus["y"] = 270#}
-      Boulder["x"] = 30
-      Boulder["y"] = 180
-      showSisyphus();
+      Sisyphus["x"] = 0;
+      Sisyphus["y"] = 270;
+      Boulder["x"] = 30;
+      Boulder["y"] = 180;
       mountainsClimbed++;
       goingUP = false;
       return;
@@ -187,8 +260,7 @@
         } else {
           Boulder["y"] -= amount;
           Sisyphus["y"] -= amount;
-          showSisyphus();
-       //   animate();
+          step(direction = "forwards");
         };
         break;
       case 2:
@@ -200,8 +272,6 @@
                 Boulder["y"] += amount;
             }
           Sisyphus["y"] += amount;
-          showSisyphus();
-        //  animate();
         };
         break;
       case 3:
@@ -213,8 +283,6 @@
                 Boulder["x"] -= amount;
             }
           Sisyphus["x"] -= amount;
-          showSisyphus();
-         // animate();
         };
         break;
       case 4:
@@ -223,8 +291,7 @@
         } else {
           Sisyphus["x"] += amount;
           Boulder["x"] += amount;
-          showSisyphus();
-          //animate();
+          step(direction = "forwards");
         }
         break;
     }
@@ -234,7 +301,7 @@
 
 const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-//once a key has been pressed, recursively waits 1 second, checks if new key has been pressed and if not
+//once a key has been pressed, recursively waits 1 second, checks if new key has been pressed and if not 
 //moves user down and left one movement
 //to do:
 //stop sisyphus if at edge of screen
@@ -259,13 +326,13 @@ async function checkMovement(keyPress) {
             }
             console.log("Sisyphus is at ", Sisyphus["x"], " ", Sisyphus["y"], " after");
             distanceWalked -= 10;
+            step("backwards");
             progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
             return await checkMovement(lastKeyPressed);
         }
-    }
+    } 
     else {
-      //console.log(lastKeyPressed, " key pressed within 1 second");
-    }
+    } 
 }
   return await checkMovement(lastKeyPressed);
 }
@@ -280,82 +347,8 @@ checkMovement(lastKeyPressed);
       await sleep(1000);
     }
   }
-/*
-  //animate sprites
-  const boulderScale = 5;
-  const initialBoulderWidth = 32;
-  const initialBoulderHeight = 32;
-  const finalBoulderWidth = boulderScale * initialBoulderWidth;
-  const finalBoulderHeight = boulderScale * initialBoulderHeight;
-  const boulderSpriteList = [0,1,2,3];
-  let frameCount = 0;
-  let spriteIndex = 0;
 
-  //https://archive.jlongster.com/Making-Sprite-based-Games-with-Canvas
-      console.log("test");
-
-  var lastTime;
-  function main() {
-    var now = Date.now();
-    var dt = (now - lastTime) / 1000.0;
-
-    update(dt);
-    render();
-
-    lastTime = now;
-    requestAnimFrame(main);
-  };
-
-  let img = new Image();
-  img.src = "{{ url_for('static', filename='rock_round.jpg')}}";
-  //when img finished loading, run animation
-  //img.onload = function() {
-  //  animate();
- // }
-
-
-
-  function drawFrame(frameX, frameY, canvasX, canvasY) {
-    //drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, destinationX...etc)
-    board_ctx.drawImage(img,
-    frameX * initialBoulderWidth,
-    frameY * initialBoulderHeight,
-    initialBoulderWidth,
-    initialBoulderHeight,
-    canvasX,
-    canvasY,
-    finalBoulderWidth,
-    finalBoulderHeight);
-    }
-
-  function animate() {
-   window.requestAnimationFrame(step);
-    }
-
-  function step() {
-    frameCount++;
-    if (frameCount < 15) {
-      window.requestAnimationFrame(step);
-      return;
-    }
-    frameCount = 0;
-    board_ctx.clearRect(0,0,board.width,board.height);
-    //drawFrame(boulderSpriteList[spriteIndex],0,Boulder["x"], Boulder["y"]);
-    //spriteIndex++;
-    //if (spriteIndex => boulderSpriteList.length) {
-   // 	spriteIndex = 0;
-   // }
-  //  for (var i = 0; i < boulderSpriteList.length; i++) {
-  //    drawFrame(boulderSpriteList[i],0,Boulder["x"], Boulder["y"]);
-  //  }
-
-    window.requestAnimationFrame(step);
-
-  } */
-
-
-  //run game
-
+  //test input
   let input = [{"direction":direction.UP, "amount":10},
                {"direction":direction.UP, "amount":10},
                {"direction":direction.RIGHT, "amount":10},
@@ -363,13 +356,6 @@ checkMovement(lastKeyPressed);
                {"direction":direction.RIGHT, "amount":10},
                {"direction":direction.UP, "amount":10},
                {"direction":direction.UP, "amount":10}];
-
-  showSisyphus();
-  //loopOverTestInput(input);
-
-
-
-
 </script>
 
 {% endblock %}
