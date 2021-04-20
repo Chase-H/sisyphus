@@ -22,8 +22,6 @@
 <div class="center">
     <h2 style="text-align: center">The Game</h2>
 </div>
-<!--<button id="rules" onclick="showRules(this)" class="center">Hide Rules-->
-<!--</button>-->
   <div id="rules_text" style="display:block" class="center" style="margin-bottom: 1em;">
   <p>
       <b>Instructions:</b> <br>
@@ -41,7 +39,10 @@
     <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid"></canvas>
   </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
 <script>
   // to do
   //better graphics/sprites
@@ -171,6 +172,17 @@
       showSisyphus();
       mountainsClimbed++;
       goingUP = false;
+      $(function()
+        {
+           $.ajax({
+                url: $SCRIPT_ROOT + '/_add_high_score',
+                type: "POST",
+                data:JSON.stringify({"distance": distanceWalked,
+                      "mountains": mountainsClimbed}),
+                contentType: 'application/json'
+                }).done(function(data) {
+            console.log(data);
+            })});
       return;
     }
 
