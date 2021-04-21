@@ -37,8 +37,8 @@
   <p>
       <b>Instructions:</b> <br>
   Like Sisyphus, you only have one path: <br>
-  Push the boulder up the hill, retrieve the boulder, repeat.<br>
-      <b>(Press 'W' to go up and 'D' to go right, then on the way back, press 'S' to go down and 'A' to go left)</b><br>
+  Push the boulder up the hill, repeat.<br>
+      <b>(Press 'W' to go up and 'D' to go right)</b><br>
   Feel free to think deeply how this game is any more or less meaningful than anything else while you play.<br>
       Enjoy.
   </p>
@@ -260,7 +260,6 @@
       Boulder["x"] = Sisyphus["x"] + playerWidth;
       Boulder["y"] = canvasHeight - boulderHeight;
       mountainsClimbed++;
-      goingUP = false;
       $(function()
         {
            $.ajax({
