@@ -75,6 +75,10 @@
   var canvasWidth = 300;
   var canvasHeight = 300;
   var playerScale = .25;
+  //var playerWidthScale = .12;
+  //var playerHeightScale = .14;
+  //var boulderWidthScale = .4;
+  //var boulderHeightScale = .6;
   var boulderScale = .5;
   var playerWidth = initPlayerWidth * playerScale;
   var playerHeight = initPlayerHeight * playerScale;
@@ -108,7 +112,7 @@
   //////////////////////////////////////////////////
   //animate sprites
   //boulder and player sprite counts
-  let boulderMoveSprites = [0,1];
+  let boulderMoveSprites = [0,1,2,3];
   let playerMoveSprites = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
   //width and height of each sprite image
   function drawFrame(image, frameX, frameY, canvasX, canvasY, width, height) {
@@ -174,7 +178,8 @@
   //ending x and y coordinates from image, starting x and y coordinates from canvas, ending x and y coordinates from canvas
   //draw frame just looks at frame locations in sprite sheet and canvas locations
   let boulderImage = new Image();
-  boulderImage.src = "{{ url_for('static', filename='boulderSprite2.png')}}";
+  //boulderImage.src = "{{ url_for('static', filename='boulderSprite2.png')}}";
+  boulderImage.src = "{{ url_for('static', filename='m_merged.png')}}";
   boulderImage.onload = function() {
     initBoulder();
   };
@@ -204,7 +209,7 @@
         if (!goingUP && lastKeyPressed == 83) {
             moveSisyphusAndBoulder(direction.LEFT, 10);
             lastKeyPressed = 65;
-            distanceWalked += 10;
+            //distanceWalked += 10;
             progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
     } else
       window.alert("Your Only Option Are Up and Forward. In That Order.");
@@ -225,7 +230,7 @@
         if (!goingUP && lastKeyPressed == 65 || (Sisyphus["x"] == 270 && Sisyphus["y"] == -33)) {
             moveSisyphusAndBoulder(direction.DOWN, 10);
             lastKeyPressed = 83;
-            distanceWalked += 10;
+            //distanceWalked += 10;
             progress.value = "Distance: " + distanceWalked + "m. Mountains Climbed: " + mountainsClimbed;
     } else
       window.alert("Your Only Option Are Up and Forward. In That Order.");
@@ -248,10 +253,12 @@
 
   function moveSisyphusAndBoulder(direction, amount, punishment=false) {
     // 1 = up, 2 = down, 3 = left, 4= right
-    if (Sisyphus["x"] == 270 && Sisyphus["y"] == -33 && goingUP) {
+    //if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0 && goingUP) {
+      if (distanceWalked!= 0 && distanceWalked % 490 == 0) {
       Sisyphus["x"] = 0;
-      Sisyphus["y"] = 270;
-      initBoulder();
+      Sisyphus["y"] = canvasHeight - playerHeight;
+      Boulder["x"] = Sisyphus["x"] + playerWidth;
+      Boulder["y"] = canvasHeight - boulderHeight;
       mountainsClimbed++;
       goingUP = false;
       $(function()
@@ -268,7 +275,9 @@
       return;
     }
 
-    else if (Sisyphus["x"] == 0 && Sisyphus["y"] == 270 && !goingUP) {
+    //else if (Sisyphus["x"] == 0 && Sisyphus["y"] == 270 && !goingUP) {
+    else if (distanceWalked!= 0 && distanceWalked % 490 == 0 & !goingUP) {
+
       goingUP = true;
       return;
     }
