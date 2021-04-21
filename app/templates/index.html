@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="center">
+<div id="toc">
+    <b>Contents</b>
+    <div id="full">
+        <a href="#intro">Introduction</a><br>
+        <a href="#vid-left">The Myth</a><br>
+        <a href="#vid-right">The Philosophy</a><br>
+        <a href="#gameCanvas">The Game</a>
+    </div>
+</div>
+    <div id="intro" style="margin-top: 75px;">
 <h1 style="text-align: center">The Myth of Sisyphus</h1>
 <p>This is a game based on the Greek myth of <a href="https://en.wikipedia.org/wiki/Sisyphus">Sisyphus</a> with inspiration from Albert Camus' essay on absurdism,
     <a href="https://www2.hawaii.edu/~freeman/courses/phil360/16.%20Myth%20of%20Sisyphus.pdf">The Myth of Sisyphus</a>. <br> The purpose of the game is to play. You can keep track of your progress, but no matter what you do,
     the boulder will always roll downhill.
 </p>
+        </div>
     </div>
     <div class="video">
         <div id="vid-left" class="center">
@@ -187,9 +198,8 @@
   }
 
   document.addEventListener('keydown', function(event) {
-    console.log("keypressed: ", event.keyCode, " last key ressed: ", lastKeyPressed,
-        " going up: ", goingUP );
     //LEFT KEY
+      console.log("Sisyphus at ", Sisyphus["x"], ", ", Sisyphus["y"], " Boulder at ", Boulder["x"], ", ", Boulder["y"]);
     if(event.keyCode == 65) {
         if (!goingUP && lastKeyPressed == 83) {
             moveSisyphusAndBoulder(direction.LEFT, 10);
@@ -212,7 +222,7 @@
     }
     //DOWN KEY
     else if(event.keyCode == 83) {
-        if (!goingUP && lastKeyPressed == 65 || (Sisyphus["x"] == 270 && Sisyphus["y"] == 0)) {
+        if (!goingUP && lastKeyPressed == 65 || (Sisyphus["x"] == 270 && Sisyphus["y"] == -33)) {
             moveSisyphusAndBoulder(direction.DOWN, 10);
             lastKeyPressed = 83;
             distanceWalked += 10;
@@ -238,11 +248,10 @@
 
   function moveSisyphusAndBoulder(direction, amount, punishment=false) {
     // 1 = up, 2 = down, 3 = left, 4= right
-    if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0 && goingUP) {
+    if (Sisyphus["x"] == 270 && Sisyphus["y"] == -33 && goingUP) {
       Sisyphus["x"] = 0;
       Sisyphus["y"] = 270;
-      Boulder["x"] = 30;
-      Boulder["y"] = 180;
+      initBoulder();
       mountainsClimbed++;
       goingUP = false;
       $(function()
@@ -298,7 +307,7 @@
         };
         break;
       case 4:
-        if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0) {
+        if (Sisyphus["x"] == 270 && Sisyphus["y"] == -33) {
           console.log("Sisyphus is too close to the right of the screen.");
         } else {
           Sisyphus["x"] += amount;
@@ -324,7 +333,7 @@ async function checkMovement(keyPress) {
   //value before any keypress
   if (keyPress != "") {
     if (keyPress == lastKeyPressed && !anotherKeyPressed && goingUP) {
-        if ((Sisyphus["x"] == 270 && Sisyphus["y"] == 0) || (Sisyphus["x"] == 0 && Sisyphus["y"] == 270)) {
+        if ((Sisyphus["x"] == 270 && Sisyphus["y"] == -33) || (Sisyphus["x"] == 0 && Sisyphus["y"] == 270)) {
 
         } else {
             console.log(keyPress, lastKeyPressed, " no key pressed");
