@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="center">
+<div id="toc">
+    <b>Contents</b>
+    <div id="full">
+        <a href="#intro">Introduction</a><br>
+        <a href="#vid-left">The Myth</a><br>
+        <a href="#vid-right">The Philosophy</a><br>
+        <a href="#gameCanvas">The Game</a>
+    </div>
+</div>
+    <div id="intro" style="margin-top: 75px;">
 <h1 style="text-align: center">The Myth of Sisyphus</h1>
 <p>This is a game based on the Greek myth of <a href="https://en.wikipedia.org/wiki/Sisyphus">Sisyphus</a> with inspiration from Albert Camus' essay on absurdism,
     <a href="https://www2.hawaii.edu/~freeman/courses/phil360/16.%20Myth%20of%20Sisyphus.pdf">The Myth of Sisyphus</a>. <br> The purpose of the game is to play. You can keep track of your progress, but no matter what you do,
     the boulder will always roll downhill.
 </p>
+        </div>
     </div>
     <div class="video">
         <div id="vid-left" class="center">
@@ -22,14 +33,12 @@
 <div class="center">
     <h2 style="text-align: center">The Game</h2>
 </div>
-<!--<button id="rules" onclick="showRules(this)" class="center">Hide Rules-->
-<!--</button>-->
   <div id="rules_text" style="display:block" class="center" style="margin-bottom: 1em;">
   <p>
       <b>Instructions:</b> <br>
   Like Sisyphus, you only have one path: <br>
-  Push the boulder up the hill, retrieve the boulder, repeat.<br>
-      <b>(Press 'W' to go up and 'D' to go right, then on the way back, press 'S' to go down and 'A' to go left)</b><br>
+  Push the boulder up the hill, repeat.<br>
+      <b>(Press 'W' to go up and 'D' to go right)</b><br>
   Feel free to think deeply how this game is any more or less meaningful than anything else while you play.<br>
       Enjoy.
   </p>
@@ -41,7 +50,10 @@
     <canvas id="gameCanvas" width="300px" height= "300px" style="border:1px solid"></canvas>
   </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type=text/javascript>
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
 <script>
   //please forgive the spaghetti and nested if/ else if/ for loops, im lazy
   // https://www.sitepoint.com/delay-sleep-pause-wait/
@@ -191,9 +203,8 @@
   }
 
   document.addEventListener('keydown', function(event) {
-    console.log("keypressed: ", event.keyCode, " last key ressed: ", lastKeyPressed,
-        " going up: ", goingUP );
     //LEFT KEY
+      console.log("Sisyphus at ", Sisyphus["x"], ", ", Sisyphus["y"], " Boulder at ", Boulder["x"], ", ", Boulder["y"]);
     if(event.keyCode == 65) {
         if (!goingUP && lastKeyPressed == 83) {
             moveSisyphusAndBoulder(direction.LEFT, 10);
@@ -216,7 +227,7 @@
     }
     //DOWN KEY
     else if(event.keyCode == 83) {
-        if (!goingUP && lastKeyPressed == 65 || (Sisyphus["x"] == 270 && Sisyphus["y"] == 0)) {
+        if (!goingUP && lastKeyPressed == 65 || (Sisyphus["x"] == 270 && Sisyphus["y"] == -33)) {
             moveSisyphusAndBoulder(direction.DOWN, 10);
             lastKeyPressed = 83;
             //distanceWalked += 10;
@@ -249,7 +260,17 @@
       Boulder["x"] = Sisyphus["x"] + playerWidth;
       Boulder["y"] = canvasHeight - boulderHeight;
       mountainsClimbed++;
-      goingUP = false;
+      $(function()
+        {
+           $.ajax({
+                url: $SCRIPT_ROOT + '/_add_high_score',
+                type: "POST",
+                data:JSON.stringify({"distance": distanceWalked,
+                      "mountains": mountainsClimbed}),
+                contentType: 'application/json'
+                }).done(function(data) {
+            console.log(data);
+            })});
       return;
     }
 
@@ -294,7 +315,7 @@
         };
         break;
       case 4:
-        if (Sisyphus["x"] == 270 && Sisyphus["y"] == 0) {
+        if (Sisyphus["x"] == 270 && Sisyphus["y"] == -33) {
           console.log("Sisyphus is too close to the right of the screen.");
         } else {
           Sisyphus["x"] += amount;
@@ -320,7 +341,7 @@ async function checkMovement(keyPress) {
   //value before any keypress
   if (keyPress != "") {
     if (keyPress == lastKeyPressed && !anotherKeyPressed && goingUP) {
-        if ((Sisyphus["x"] == 270 && Sisyphus["y"] == 0) || (Sisyphus["x"] == 0 && Sisyphus["y"] == 270)) {
+        if ((Sisyphus["x"] == 270 && Sisyphus["y"] == -33) || (Sisyphus["x"] == 0 && Sisyphus["y"] == 270)) {
 
         } else {
             console.log(keyPress, lastKeyPressed, " no key pressed");

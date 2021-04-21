@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="{{ url_for('static', filename='js/main_scripts.js') }}"></script>
+<body>
+<style>
+
+ td {
+        width: 150px;
+        text-align: center;
+        border: 1px solid black;
+        padding: 5px;
+      }
+</style>
+<h1 class="center">High Scores</h1>
+<table class="center">
+  <thead>
+    <tr>
+        <th>Username</th>
+        <th>Distance Walked</th>
+        <th>Mountains Climbed</th>
+    </tr>
+    </thead>
+    <tbody>
+     {% for row in data %}
+            <tr>
+                <td>{{row[0]}}</td>
+                <td>{{row[1]}}</td>
+                <td>{{row[2]}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+
+{% endblock %}
